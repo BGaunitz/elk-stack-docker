@@ -59,7 +59,7 @@ services:
       context:        ./logstash
     restart:          always
     healthcheck:
-      test:           ["CMD", "nc", "--send-only", "localhost 5044 < /dev/null"]
+      test:           ["CMD", "nc", "--send-only", "localhost 5044 < /dev/null && echo 0 || echo 1"]
       interval:       15s
       timeout:        10s
       retries:        10
