@@ -1,0 +1,91 @@
+services:
+  gateway:
+    build:
+      context:        ./nginx
+    restart:          always
+    ports:
+      - ${LOGSTASH_EXTERNAL_PORT:-5044}:5044
+      - ${KIBANA_EXTERNAL_PORT:-5601}:5601
+      - ${ELASTICSEARCH_EXTERNAL_PORT:-9200}:9200
+    healthcheck:
+      test:           ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval:       15s
+      timeout:        10s
+      retries:        10
+    networks:
+      - internal
+      - external
+  kibana:
+    depends_on:
+      - elasticsearch
+    image:            docker.elastic.co/kibana/kibana:5.5.1
+    restart:          always
+    healthcheck:
+      test:           ["CMD", "curl", "-f", "http://localhost:5601"]
+      interval:       15s
+      timeout:        10s
+      retries:        10
+    environment:
+      #https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
+      - XPACK_SECURITY_ENABLED=false
+      - XPACK_MONITORING_ENABLED=false
+      - XPACK_GRAPH_ENABLED=false
+      - XPACK_REPORTING_ENABLED=false
+      - XPACK_ML_ENABLED=false
+    networks:
+      - internal
+  elasticsearch:
+    image:            docker.elastic.co/elasticsearch/elasticsearch:5.5.1
+    restart:          always
+    volumes:
+      - elastic-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test:           ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval:       15s
+      timeout:        10s
+      retries:        10
+    environment:
+      #https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
+      - http.host=0.0.0.0
+      - transport.host=127.0.0.1
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - xpack.ml.enabled=false
+      - xpack.watcher.enabled=false
+    networks:
+      - internal
+  logstash:
+    build:
+      context:        ./logstash
+    restart:          always
+    healthcheck:
+      test:           ["CMD", "nc", "--send-only", "localhost 5044 < /dev/null"]
+      interval:       15s
+      timeout:        10s
+      retries:        10
+    environment:
+      #https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
+      - XPACK_MONITORING_ENABLED=false
+    networks:
+      - internal
+  filebeat:
+    build:
+      context:        ./example/filebeat
+    volumes:
+      - test-log-data:/var/log/testlogs:ro
+    restart:          always
+    networks:
+      - external
+  test-log-producer:
+    build:
+      context:        ./example/log-producer
+    volumes:
+      - test-log-data:/var/log/testlogs
+    restart:          always
+version:              "3"
+volumes:
+  elastic-data:       ~
+  test-log-data:
+networks:
+  internal:
+  external:

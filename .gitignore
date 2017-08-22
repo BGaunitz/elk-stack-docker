@@ -1,0 +1,7 @@
+.env
+**/certs
+cert-scripts/*
+!cert-scripts/*.sh
+!cert-scripts/*.template
+*.conf
+!logstash/conf/logstash.conf

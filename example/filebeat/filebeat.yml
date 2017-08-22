@@ -1,0 +1,19 @@
+filebeat:
+  prospectors:
+    -
+      paths:
+        - /var/log/testlogs/test.log
+      input_type:               log
+      document_type:            log
+      scan_frequency:           1s
+output:
+  logstash:
+    hosts:                      ["gateway:5044"]
+    bulk_max_size:              1024
+    ssl:
+      certificate_authorities:  ["/etc/pki/tls/certs/ca.crt"]
+      certificate:              "/etc/pki/tls/certs/filebeat1.crt"
+      key:                      "/etc/pki/tls/private/filebeat1.key"
+logging:
+  files:
+    rotateeverybytes:           10485760 # = 10MB
