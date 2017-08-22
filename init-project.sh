@@ -1,4 +1,5 @@
 #! /bin/bash -e
+CERT_DIR="cert-scripts"
 
 mv ca.csr.conf.sample ca.csr.conf
 mv server.csr.conf.sample server.csr.conf
