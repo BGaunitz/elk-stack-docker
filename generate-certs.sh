@@ -21,7 +21,9 @@ case $option in
     ;;
 esac
 
-echo "Loading config"
+mkdir -p $CERT_DIR/private
+mkdir -p $CERT_DIR/newcerts
+mkdir -p $CERT_DIR/certs
 
 cp $CERT_DIR/openssl.cnf.template $CERT_DIR/openssl.cnf
 find $CERT_DIR/openssl.cnf -type f -exec sed -i 's|REPLACE_DIRECTORY|'"${DIR}"'\/'"${CERT_DIR}"'|g' {} \;
