@@ -55,6 +55,8 @@ then
     mkdir -p certs/server
     cp $CERT_DIR/private/server.* certs/server/
     cp $CERT_DIR/certs/server.crt certs/server/
+
+    mkdir -p $LOGSTASH_DIR/certs/
     cp certs/server/* $LOGSTASH_DIR/certs/
   done
 fi
