@@ -9,3 +9,4 @@ mkdir -p $CERT_DIR/newcerts
 mkdir -p $CERT_DIR/certs
 mkdir -p $CERT_DIR/csr
 touch $CERT_DIR/index.txt
+echo 1000 > $CERT_DIR/serial
