@@ -31,14 +31,18 @@ find $CERT_DIR/openssl.cnf -type f -exec sed -i 's|REPLACE_DIRECTORY|'"${DIR}"'\
 if [ $MODE -eq 0 ]
 then
   echo "Generating CA"
+  mkdir -p certs/ca
+
   cat ca.csr.conf | \
   while read CA; do
     export CA_SUBJECT="$CA"
     $CERT_DIR/generate-ca.sh
     echo "Copy CA key and certificate to certs/ca"
-    mkdir -p certs/ca
+
     cp $CERT_DIR/private/ca.key certs/ca/
     cp $CERT_DIR/certs/ca.crt certs/ca/
+
+    mkdir -p $LOGSTASH_DIR/certs/
     cp certs/ca/ca.crt $LOGSTASH_DIR/certs/
   done
 fi
@@ -46,13 +50,15 @@ fi
 if [ $MODE -eq 0 ] || [ $MODE -eq 1 ]
 then
   echo "Generating Server Certificate"
+  mkdir -p certs/server
+
   cat server.csr.conf | \
   while read SERVER; do
     export SERVER_SUBJECT="$SERVER"
 
     $CERT_DIR/generate-server.sh
     echo "Copy server key and certificate to certs/server"
-    mkdir -p certs/server
+
     cp $CERT_DIR/private/server.* certs/server/
     cp $CERT_DIR/certs/server.crt certs/server/
 
@@ -65,11 +71,15 @@ if [ $MODE -eq 0 ] || [ $MODE -eq 2 ]
 then
   echo "Generating Client Certificate"
   mkdir -p certs/clients
+
   cat clients.csr.conf | \
   while read CLIENT; do
     export CLIENT_SUBJECT="$CLIENT"
+
     $CERT_DIR/generate-client.sh
     CERT_FILE_NAME=$(echo $CLIENT | grep '\/CN=[^\/]*' -o | sed -e 's/\/CN=//g') #_$(date +"%Y-%m-%d_%H-%M-%S")
+
+
     cp $CERT_DIR/certs/client.crt certs/clients/$CERT_FILE_NAME.crt
     cp $CERT_DIR/private/client.key certs/clients/$CERT_FILE_NAME.key
   done
