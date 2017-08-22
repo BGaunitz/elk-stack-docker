@@ -5,3 +5,5 @@ cert-scripts/*
 !cert-scripts/*.template
 *.conf
 !logstash/conf/logstash.conf
+/elk-stack.iml
+/.idea/
