@@ -7,3 +7,5 @@ cert-scripts/*
 !logstash/conf/logstash.conf
 /elk-stack.iml
 /.idea/
+!/nginx/conf/
+!/nginx/conf/**/*.conf
