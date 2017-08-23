@@ -40,7 +40,7 @@ services:
     volumes:
       - elastic-data:/usr/share/elasticsearch/data
     healthcheck:
-      test:           ["CMD", "curl", "-f", "http://localhost:9200"]
+      test:           ["CMD", "curl", "http://localhost:9200 || exit 1"]
       interval:       15s
       timeout:        10s
       retries:        10
@@ -58,11 +58,6 @@ services:
     build:
       context:        ./logstash
     restart:          always
-    healthcheck:
-      test:           ["CMD", "nc", "--send-only", "localhost 5044 < /dev/null && echo 0 || echo 1"]
-      interval:       15s
-      timeout:        10s
-      retries:        10
     environment:
       #https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
       - XPACK_MONITORING_ENABLED=false
