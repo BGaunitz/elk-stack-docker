@@ -1,24 +1,86 @@
 # ELK Stack Docker
 
-This project bundles Kibana, ElasticSearch and Logstash using Docker. Nginx is used as a gateway to the network. Kibana and ElasticSearch are secured by HTTP Basic Auth. Logstash is secured using client and server certificates.
+This project bundles Kibana, ElasticSearch and Logstash using Docker. Nginx is used as a gateway to the network. Each component is provided using a separate docker container which is orchestrated by using docker-compose
+
+## Network structure
+
+The Kibana, ElasticSearch and Logstash containers are running within the same "Docker" network and are only accessible from within the network. For external access an additional nginx container is used as a gateway which also secures access to the ELK stack containers.
+
+*External* access to Kibana and ElasticSearch is secured using HTTP Basic Authentication (See *Configuration -> nginx*). Traffic to these two containers is reverse proxied by the nginx gateway.  
+*External* access to Logstash is secured using client / server certificates. Traffic to Logstash is passed through the nginx gateway as it is encrypted.
+
+![Network overview](network-overview.png "Network Overview")
 
 ## Project structure
 
+`/cert-scripts` -> OpenSSL working directory  
+`/certs` -> Generated CA, server and client keys and certificates  
+`/example` -> Example log producer and filebeat Docker container images
+`/logstash` -> Logstash Docker image
+`/nginx` -> Nginx Docker image  
+`*.sample` -> templates for config files
+
+## Prerequisites
+
+```
+docker
+docker-compose
+```
 
 ## Getting started
 
-1. Generate certificates
-   * Run `generate-certs.sh`
-2. Change HTTP Basic Authentication for Kibana and ElasticSearch
-   * `nginx/conf/passwords/`
-   * Default values are `kibana:kibana` and `elastic:elastic`
+1. Create necessary project directories and config files
+   - Run `init-project.sh`
+2. Configure -> See Configuration
+2. Generate certificates and keys
+  - Run `generate-certs.sh -a` to generate CA, server and client (all) keys and certificates **(Recommended for first usage)**
+  - Run `generate-certs.sh -s` to server keys and certificates
+  - Run `generate-certs.sh -c` to client keys and certificates
+3. Run docker-compose
+  - `docker-compose up -d --build`
 
-## Customization
+## Example / Test Setup
 
-- Rename `.env.sample` to `.env` to change public ports
+  1. Create necessary project directories and config files
+    - Run `init-project.sh`    
+  2. Generate certificates and keys
+    - Run `generate-certs.sh -a` to generate CA, server and client (all) keys and certificates
+  3. Copy client certificates to filebeat directory
+    - Run `install-test-certs.sh`
+  4. Open `localhost:5601` in browser to access Kibana
+    - `user: kibana`
+    - `password: kibana`
+    - Create index
+    - one log entry per second should appear
 
-   See https://docs.docker.com/compose/environment-variables/
+## Configuration
+
+### nginx (gateway) `nginx/conf`
+File / Directory | Description
+--- | ---
+`nginx.conf` | General nginx options
+`/passwords` | Change users and passwords for ElasticSearch and Kibana HTTP Basic Authentication
+`/sites` | Customize proxy routes for ElasticSearch and Kibana
+`/streams` | Customize logstash stream
+
+### OpenSSL / Certificate Generation
+File / Directory | Description
+--- | ---
+`cert-scripts/openssl.cnf.template` | Customize OpenSSL
+`ca.csr.conf` | CA CSR
+`server.csr.conf` | Server CSR
+`clients.csr.conf` | Clients CSR - multiple clients are supported
+
+### External ports
+* Create `.env` file or rename `.env.sample`
+  ```
+  KIBANA_EXTERNAL_PORT=8800
+  LOGSTASH_EXTERNAL_PORT=8801
+  ELASTICSEARCH_EXTERNAL_PORT=8802
+  ```
+  See <https://docs.docker.com/compose/environment-variables/>
+
 
 ## Resources
-https://jamielinux.com/docs/openssl-certificate-authority/create-the-root-pair.html
-https://www.digitalocean.com/community/tutorials/how-to-install-elasticsearch-logstash-and-kibana-elk-stack-on-ubuntu-14-04
+
+<https://jamielinux.com/docs/openssl-certificate-authority/create-the-root-pair.html> <https://www.digitalocean.com/community/tutorials/how-to-install-elasticsearch-logstash-and-kibana-elk-stack-on-ubuntu-14-04>
