@@ -33,30 +33,30 @@ docker-compose
 
 1. Create necessary project directories and config files
    - Run `init-project.sh`
-1. Configure -> See Configuration
-1. Generate certificates and keys
+2. Configure -> See Configuration
+3. Generate certificates and keys
   - Run `generate-certs.sh -a` to generate CA, server and client (all) keys and certificates **(Recommended for first usage)**
   - Run `generate-certs.sh -s` to server keys and certificates
   - Run `generate-certs.sh -c` to client keys and certificates
-1. Run docker-compose
+4. Run docker-compose
   - `docker-compose up -d --build`
 
 ## Example / Test Setup
 
-  1. Create necessary project directories and config files
-    - Run `init-project.sh`    
-  1. Generate certificates and keys
-    - Run `generate-certs.sh -a` to generate CA, server and client (all) keys and certificates
-  1. Copy client certificates to filebeat directory
-    - Run `install-test-certs.sh`
-  1. Run docker-compose
-    - `docker-compose -f docker-compose.test.yml up -d --build`
-  1. Open `localhost:5601` in browser to access Kibana
-    - **Start up of Kibana may take a few minutes**
-    - `user: kibana`
-    - `password: kibana`
-    - Create index
-    - one log entry per second should appear    
+1. Create necessary project directories and config files
+  - Run `init-project.sh`    
+2. Generate certificates and keys
+  - Run `generate-certs.sh -a` to generate CA, server and client (all) keys and certificates
+3. Copy client certificates to filebeat directory
+  - Run `install-test-certs.sh`
+4. Run docker-compose
+  - `docker-compose -f docker-compose.test.yml up -d --build`
+5. Open `localhost:5601` in browser to access Kibana
+  - **Start up of Kibana may take a few minutes**
+  - `user: kibana`
+  - `password: kibana`
+  - Create index
+  - one log entry per second should appear    
 
 ## Configuration
 
