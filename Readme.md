@@ -2,6 +2,8 @@
 
 This project bundles Kibana, ElasticSearch and Logstash using Docker. Nginx is used as a gateway to the network. Each component is provided using a separate docker container which is orchestrated by using docker-compose
 
+Further information: <https://www.elastic.co/de/products>
+
 ## Network structure
 
 The Kibana, ElasticSearch and Logstash containers are running within the same "Docker" network and are only accessible from within the network. For external access an additional nginx container is used as a gateway which also secures access to the ELK stack containers.
@@ -31,27 +33,30 @@ docker-compose
 
 1. Create necessary project directories and config files
    - Run `init-project.sh`
-2. Configure -> See Configuration
-2. Generate certificates and keys
+1. Configure -> See Configuration
+1. Generate certificates and keys
   - Run `generate-certs.sh -a` to generate CA, server and client (all) keys and certificates **(Recommended for first usage)**
   - Run `generate-certs.sh -s` to server keys and certificates
   - Run `generate-certs.sh -c` to client keys and certificates
-3. Run docker-compose
+1. Run docker-compose
   - `docker-compose up -d --build`
 
 ## Example / Test Setup
 
   1. Create necessary project directories and config files
     - Run `init-project.sh`    
-  2. Generate certificates and keys
+  1. Generate certificates and keys
     - Run `generate-certs.sh -a` to generate CA, server and client (all) keys and certificates
-  3. Copy client certificates to filebeat directory
+  1. Copy client certificates to filebeat directory
     - Run `install-test-certs.sh`
-  4. Open `localhost:5601` in browser to access Kibana
+  1. Run docker-compose
+    - `docker-compose -f docker-compose.test.yml up -d --build`
+  1. Open `localhost:5601` in browser to access Kibana
+    - **Start up of Kibana may take a few minutes**
     - `user: kibana`
     - `password: kibana`
     - Create index
-    - one log entry per second should appear
+    - one log entry per second should appear    
 
 ## Configuration
 
@@ -73,14 +78,15 @@ File / Directory | Description
 
 ### External ports
 * Create `.env` file or rename `.env.sample`
-  ```
-  KIBANA_EXTERNAL_PORT=8800
-  LOGSTASH_EXTERNAL_PORT=8801
-  ELASTICSEARCH_EXTERNAL_PORT=8802
-  ```
-  See <https://docs.docker.com/compose/environment-variables/>
+```
+KIBANA_EXTERNAL_PORT=8800
+LOGSTASH_EXTERNAL_PORT=8801
+ELASTICSEARCH_EXTERNAL_PORT=8802
+```
+See <https://docs.docker.com/compose/environment-variables/>
 
 
 ## Resources
 
-<https://jamielinux.com/docs/openssl-certificate-authority/create-the-root-pair.html> <https://www.digitalocean.com/community/tutorials/how-to-install-elasticsearch-logstash-and-kibana-elk-stack-on-ubuntu-14-04>
+- <https://jamielinux.com/docs/openssl-certificate-authority/create-the-root-pair.html>
+- <https://www.digitalocean.com/community/tutorials/how-to-install-elasticsearch-logstash-and-kibana-elk-stack-on-ubuntu-14-04>
