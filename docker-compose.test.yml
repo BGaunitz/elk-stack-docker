@@ -52,6 +52,7 @@ services:
   logstash:
     build:
       context:        ./logstash
+      dockerfile:     Dockerfile-testing
     restart:          always
     environment:
       #https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
